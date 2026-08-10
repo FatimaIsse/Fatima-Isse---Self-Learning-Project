@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumen</title>
+    <meta name="description"
+        content="Lumen is a self-built daily growth path. No feed, no scroll — just short, real activities toward who you're trying to become.">
+    <link rel="icon" href="/assets/images/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+
+<body data-mood="none">
+    <div class="ambient-bg" aria-hidden="true">
+        <span class="ambient-starfield"></span>
+        <span class="ambient-nebula ambient-nebula-a"></span>
+        <span class="ambient-nebula ambient-nebula-b"></span>
+        <span class="ambient-moon"></span>
+        <span class="ambient-star"></span>
+        <span class="ambient-star"></span>
+        <span class="ambient-star"></span>
+        <span class="ambient-star"></span>
+        <span class="ambient-star"></span>
+        <span class="ambient-star"></span>
+        <span class="ambient-star"></span>
+        <span class="ambient-star"></span>
+        <span class="ambient-comet"></span>
+    </div>
+
+    <div class="app">
+
+        <!-- ============ TOP BAR ============ -->
+        <header class="topbar">
+            <div class="topbar-inner">
+                <button class="brand" id="brandHome" data-i18n-aria-label="nav.brandHome" aria-label="Lumen home">
+                    <span class="brand-logo" id="brandLogoSlot"></span>
+                    <span class="brand-word">Lumen</span>
+                </button>
+
+                <div class="topbar-right">
+                    <nav class="topnav" id="topNav">
+                        <button id="navHome" class="nav-link" data-i18n="nav.home">Home</button>
+                        <button id="navRestart" class="nav-link" data-i18n="nav.buildPath">Build Your Path</button>
+                        <button id="navGrowth" class="nav-link" data-i18n="nav.myGrowth">My Growth</button>
+                    </nav>
+                    <div class="streak-chip" id="streakChip" hidden>
+                        <span class="streak-flame">🔥</span><span id="streakCount">0</span>
+                    </div>
+                    <select class="lang-switcher mood-switcher" id="moodSwitcher" data-i18n-aria-label="nav.moodLabel"
+                        aria-label="Mood"></select>
+                    <button class="audio-toggle-btn" id="audioToggleBtn" type="button" aria-pressed="false"
+                        data-i18n-aria-label="nav.audioOff" aria-label="Turn on mood sound"
+                        data-i18n-title="nav.audioOff" title="Turn on mood sound">🔇</button>
+                    <select class="lang-switcher" id="langSwitcher" aria-label="Language"></select>
+                    <button class="profile-btn" id="profileBtn" data-i18n-title="nav.account" title="Account"
+                        data-i18n-aria-label="nav.account" aria-label="Your account">
+                        <span id="profileBtnInner">👤</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="progress-dots" id="progressDots"></div>
+
+        <main>
+
+            <!-- ============ WELCOME ============ -->
+            <section class="screen active" id="screen-welcome">
+                <div class="welcome-inner">
+                    <div class="welcome-text">
+                        <h1 data-i18n-html="welcome.headingHtml">Grow with <em>intention</em>.</h1>
+                        <p class="sub" data-i18n="welcome.sub">Lumen helps you build better habits, discover what
+                            matters, and become your best self — one step at a time.</p>
+                        <button class="btn-primary" id="startBtn"><span data-i18n="welcome.start">Start
+                                building</span> <span class="arrow">→</span></button>
+                    </div>
+                    <div class="welcome-visual">
+                        <span class="welcome-logo" id="welcomeLogoSlot"></span>
+                    </div>
+                </div>
+
+                <div class="feature-strip">
+                    <div class="feature-item">
+                        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.6" aria-hidden="true">
+                            <path d="M12 20c0-5 0-9 0-13M12 11c-2.6-2.6-5.4-2.6-7.4-1 1.6 2.6 4.3 3.6 7.4 2.6"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <h3 data-i18n="welcome.feature1.title">Personalized for you</h3>
+                        <p data-i18n="welcome.feature1.desc">Content and paths based on your goals and mood.</p>
+                    </div>
+                    <div class="feature-item">
+                        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.6" aria-hidden="true">
+                            <circle cx="12" cy="12" r="8" />
+                            <circle cx="12" cy="12" r="4" />
+                            <circle cx="12" cy="12" r="0.9" fill="currentColor" stroke="none" />
+                        </svg>
+                        <h3 data-i18n="welcome.feature2.title">Build better habits</h3>
+                        <p data-i18n="welcome.feature2.desc">Small, consistent steps that create real change.</p>
+                    </div>
+                    <div class="feature-item">
+                        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.6" aria-hidden="true">
+                            <polyline points="3,17 9,11 13,15 21,6" stroke-linecap="round" stroke-linejoin="round" />
+                            <polyline points="15,6 21,6 21,12" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <h3 data-i18n="welcome.feature3.title">Track your growth</h3>
+                        <p data-i18n="welcome.feature3.desc">Watch your streaks, badges, and forest grow.</p>
+                    </div>
+                    <div class="feature-item">
+                        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.6" aria-hidden="true">
+                            <path
+                                d="M12 20s-7-4.35-9.5-8.5C.5 8 2 4.5 5.5 4c2-.3 3.8.7 4.5 2.3C10.7 4.7 12.5 3.7 14.5 4c3.5.5 5 4 3 7.5C19.5 15.65 12 20 12 20z"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        <h3 data-i18n="welcome.feature4.title">Feel your best</h3>
+                        <p data-i18n="welcome.feature4.desc">Mind, body, and goals — in balance.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ GOALS ============ -->
+            <section class="screen" id="screen-goals">
+                <div class="step-head">
+                    <button class="step-back-btn" id="goalsBackBtn" data-i18n-aria-label="nav.back" aria-label="Back"
+                        data-i18n-title="nav.back" title="Back">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                            aria-hidden="true">
+                            <path d="M15 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                    <p class="eyebrow" data-step="1">step 1</p>
+                </div>
+                <h2 data-i18n="goals.heading">Who do you want to become?</h2>
+                <p class="screen-sub" data-i18n="goals.sub">Pick one focus — you can always switch to something else
+                    next time.</p>
+                <div class="option-grid goals-grid" id="goalsGrid"></div>
+                <div class="screen-nav">
+                    <button class="btn-primary" id="goalsNext" disabled data-i18n="goals.continue">Continue</button>
+                </div>
+            </section>
+
+            <!-- ============ TIME ============ -->
+            <section class="screen" id="screen-time">
+                <div class="step-head">
+                    <button class="step-back-btn" id="timeBackBtn" data-i18n-aria-label="nav.back" aria-label="Back"
+                        data-i18n-title="nav.back" title="Back">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                            aria-hidden="true">
+                            <path d="M15 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                    <p class="eyebrow" data-step="2">step 2</p>
+                </div>
+                <h2 data-i18n="time.heading">How much time do you actually have?</h2>
+                <p class="screen-sub" data-i18n="time.sub">Drag to set your own, or tap a preset. This decides how
+                    many stops are on your path.</p>
+
+                <div class="time-slider-card">
+                    <div class="time-slider-value"><span id="timeValueNum">15</span><span class="time-slider-unit"
+                            data-i18n="time.unit">min</span></div>
+                    <input type="range" id="timeSlider" min="3" max="90" step="1" value="15"
+                        aria-label="Minutes available">
+                    <div class="time-slider-ticks"><span>3</span><span>90+</span></div>
+                </div>
+                <div class="chip-row" id="timePresets"></div>
+
+                <div class="screen-nav">
+                    <button class="btn-primary" id="timeNext" data-i18n="time.continue">Continue</button>
+                </div>
+            </section>
+
+            <!-- ============ SUBJECT (within the picked identity) ============ -->
+            <section class="screen" id="screen-subject">
+                <div class="step-head">
+                    <button class="step-back-btn" id="subjectBackBtn" data-i18n-aria-label="nav.back" aria-label="Back"
+                        data-i18n-title="nav.back" title="Back">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                            aria-hidden="true">
+                            <path d="M15 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                    <p class="eyebrow" data-step="3">step 3</p>
+                </div>
+                <h2 id="subjectHeading" data-i18n="subject.heading">What sounds good today?</h2>
+                <p class="screen-sub" id="subjectScreenSub">Pick what feels right — you can always switch next time.
+                </p>
+                <div class="option-grid" id="subjectGrid"></div>
+                <div class="screen-nav">
+                    <button class="btn-primary" id="subjectNext" disabled data-i18n="subject.continue">Continue</button>
+                </div>
+            </section>
+
+            <!-- ============ LANGUAGE (only when Languages is the picked subject) ============ -->
+            <section class="screen" id="screen-language">
+                <div class="step-head">
+                    <button class="step-back-btn" id="languageBackBtn" data-i18n-aria-label="nav.back" aria-label="Back"
+                        data-i18n-title="nav.back" title="Back">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                            aria-hidden="true">
+                            <path d="M15 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                    <p class="eyebrow" data-step="4">step 4</p>
+                </div>
+                <h2 data-i18n="langStep.heading">Which language do you want to learn?</h2>
+                <p class="screen-sub" data-i18n="langStep.sub">This decides the words, audio, and video in today's
+                    language practice.</p>
+                <div class="option-grid language-grid" id="languageGrid"></div>
+                <div class="screen-nav">
+                    <button class="btn-primary" id="languageNext" disabled
+                        data-i18n="langStep.continue">Continue</button>
+                </div>
+            </section>
+
+            <!-- ============ STYLE ============ -->
+            <section class="screen" id="screen-style">
+                <div class="step-head">
+                    <button class="step-back-btn" id="styleBackBtn" data-i18n-aria-label="nav.back" aria-label="Back"
+                        data-i18n-title="nav.back" title="Back">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                            aria-hidden="true">
+                            <path d="M15 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                    <p class="eyebrow" data-step="4">step 4</p>
+                </div>
+                <h2 data-i18n="style.heading">How do you like to take things in?</h2>
+                <p class="screen-sub" data-i18n="style.sub">We'll lean toward this format whenever a goal supports it.
+                </p>
+                <div class="option-grid" id="styleGrid"></div>
+                <div class="screen-nav">
+                    <button class="btn-primary" id="styleNext" disabled data-i18n="style.continue">Continue</button>
+                </div>
+            </section>
+
+            <!-- ============ MOOD ============ -->
+            <section class="screen" id="screen-mood">
+                <div class="step-head">
+                    <button class="step-back-btn" id="moodBackBtn" data-i18n-aria-label="nav.back" aria-label="Back"
+                        data-i18n-title="nav.back" title="Back">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                            aria-hidden="true">
+                            <path d="M15 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                    <p class="eyebrow" data-step="5">step 5</p>
+                </div>
+                <h2 data-i18n="mood.heading">How are you feeling right now?</h2>
+                <p class="screen-sub" data-i18n="mood.sub">This changes how ambitious today's path is — never the
+                    goal itself.</p>
+                <div class="option-grid mood-grid" id="moodGrid"></div>
+                <div class="screen-nav">
+                    <button class="btn-primary" id="moodNext" disabled data-i18n="mood.buildPath">Build my path</button>
+                </div>
+            </section>
+
+            <!-- ============ PATH ============ -->
+            <section class="screen" id="screen-path">
+                <div class="nova-card" id="novaCard"></div>
+                <div class="nova-note" id="novaNote"></div>
+                <div class="path-head">
+                    <button class="step-back-btn" id="pathBackBtn" data-i18n-aria-label="nav.back" aria-label="Back"
+                        data-i18n-title="nav.back" title="Back">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                            aria-hidden="true">
+                            <path d="M15 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                    <h2 data-i18n="path.heading">Today's path</h2>
+                    <span class="path-count" id="pathCount"></span>
+                </div>
+                <div class="path-list" id="pathList"></div>
+                <div class="day-note-card">
+                    <label class="profile-label" for="dayNoteInput" data-i18n="path.notesHeading">Anything else you
+                        did today?</label>
+                    <textarea id="dayNoteInput" class="od-textarea day-note-textarea"
+                        data-i18n-placeholder="path.notesPlaceholder"
+                        placeholder="Write down what you actually did today — outside today's suggestions too."></textarea>
+                </div>
+                <div class="screen-nav">
+                    <button class="btn-primary" id="finishBtn"><span data-i18n="path.finish">Finish today's
+                            journey</span> ✦</button>
+                </div>
+            </section>
+
+            <!-- ============ COMPLETION ============ -->
+            <section class="screen" id="screen-completion">
+                <div class="completion-inner">
+                    <span class="completion-logo" id="completionLogoSlot"></span>
+                    <h2 id="completionHeading">You completed today's journey.</h2>
+                    <p class="sub-italic" data-i18n="completion.subItalic">Leave better than you arrived.</p>
+                    <div class="completion-stats" id="completionStats"></div>
+                    <button class="btn-primary" id="viewGrowthBtn" data-i18n="completion.viewGrowth">View my
+                        growth</button>
+                    <button class="btn-ghost" id="moreContentBtn" disabled data-i18n-title="completion.moreContentTitle"
+                        title="Lumen is finite by design"><span data-i18n="completion.moreContent">More
+                            content</span></button>
+                    <p class="finite-note" data-i18n="completion.finiteNote">Lumen doesn't do infinite scroll. Come
+                        back tomorrow for a new path.</p>
+                </div>
+            </section>
+
+            <!-- ============ PROGRESS / GROWTH ============ -->
+            <section class="screen" id="screen-progress">
+                <p class="eyebrow" data-i18n="growth.eyebrow">your growth</p>
+                <h2 data-i18n="growth.heading">The forest you're growing</h2>
+                <div class="nova-card" id="novaGrowthCard"></div>
+
+                <div class="growth-stats-row" id="growthStatsRow"></div>
+
+                <h3 class="section-heading" data-i18n="growth.last28">Last 28 days</h3>
+                <div id="calendarWrap"></div>
+
+                <div class="milestone-note" id="milestoneNote"></div>
+
+                <h3 class="section-heading" data-i18n="growth.focusMonth">Focus this month</h3>
+                <div class="dashboard" id="dashboard"></div>
+
+                <h3 class="section-heading" data-i18n="growth.yourForest">Your forest</h3>
+                <div class="tree-grid" id="treeGrid"></div>
+
+                <h3 class="section-heading" id="badgesHeading" hidden data-i18n="growth.badgesEarned">Badges earned</h3>
+                <div class="badge-row" id="badgeRow"></div>
+
+                <div class="progress-actions">
+                    <button class="btn-primary" id="buildAgainBtn" data-i18n="growth.buildAnother">Build another
+                        day</button>
+                    <button class="btn-ghost" id="homeBtn" data-i18n="growth.backHome">Back to home</button>
+                    <button class="btn-text btn-danger" id="restartAllBtn" data-i18n="growth.eraseAll">Erase
+                        everything &amp; start over</button>
+                </div>
+            </section>
+
+            <!-- ============ ACCOUNT / PROFILE ============ -->
+            <section class="screen" id="screen-profile">
+                <span class="profile-logo" id="profileLogoSlot"></span>
+                <div id="profileWelcomeBlock">
+                    <h1 class="profile-welcome-heading" data-i18n="profile.welcomeHeading">Welcome to Lumen</h1>
+                    <p class="profile-welcome-sub" data-i18n="profile.welcomeSub">One short, real path a day.</p>
+                </div>
+                <p class="eyebrow" data-i18n="profile.eyebrow">your account</p>
+                <h2 id="profileHeading">Sign in</h2>
+                <p class="screen-sub" id="profileScreenSub">Create a free profile so today's path and progress get
+                    saved.</p>
+
+                <div class="account-card" id="accountSignedOut">
+                    <form id="emailSignInForm" class="email-signin-form">
+                        <input type="text" id="emailSignInName" class="profile-input"
+                            data-i18n-placeholder="profile.namePlaceholder" placeholder="Your name" maxlength="24"
+                            required>
+                        <input type="email" id="emailSignInEmail" class="profile-input"
+                            data-i18n-placeholder="profile.emailPlaceholder" placeholder="you@example.com" required>
+                        <div class="password-field">
+                            <input type="password" id="emailSignInPassword" class="profile-input"
+                                data-i18n-placeholder="profile.passwordPlaceholder" placeholder="Password" minlength="6"
+                                required>
+                            <button type="button" class="password-toggle-btn" id="togglePasswordBtn"
+                                data-i18n-aria-label="profile.showPassword" aria-label="Show password">
+                                <svg id="eyeIconShow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.6" aria-hidden="true">
+                                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                                <svg id="eyeIconHide" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="1.6" aria-hidden="true" hidden>
+                                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                    <circle cx="12" cy="12" r="3" />
+                                    <line x1="3" y1="21" x2="21" y2="3" stroke-linecap="round" />
+                                </svg>
+                            </button>
+                        </div>
+                        <button type="button" class="forgot-password-link" id="forgotPasswordBtn"
+                            data-i18n="profile.forgotPassword">Forgot password?</button>
+                        <p class="form-note" id="emailSignInNote" hidden></p>
+                        <button type="submit" class="btn-primary" id="emailSignInSubmit"
+                            data-i18n="profile.signInBtn">Sign in</button>
+                    </form>
+                    <div class="account-divider" id="accountDivider"><span data-i18n="profile.or">or</span></div>
+                    <div id="googleBtnSlot" class="google-btn-slot"></div>
+                </div>
+
+                <div class="profile-form" id="accountSignedIn" hidden>
+                    <div class="profile-header">
+                        <button class="avatar-upload-btn" id="avatarUploadBtn"
+                            data-i18n-title="profile.changePhotoTitle" title="Change photo"
+                            data-i18n-aria-label="profile.changePhotoAria" aria-label="Change profile photo">
+                            <img id="avatarPreviewImg" alt="" hidden>
+                            <span id="avatarPreviewEmoji">🌸</span>
+                            <span class="avatar-edit-badge">✎</span>
+                        </button>
+                        <input type="file" id="avatarFileInput" accept="image/*" hidden>
+                        <div class="profile-header-text">
+                            <div class="profile-name-display" id="profileNameDisplay">—</div>
+                            <button type="button" class="change-photo-link" id="changePhotoBtn"
+                                data-i18n="profile.changePhotoLink">Change photo</button>
+                        </div>
+                    </div>
+
+                    <div class="growth-stats-row profile-stats-row" id="profileStatsRow"></div>
+
+                    <button class="growth-preview-card" id="growthPreviewCard" type="button">
+                        <span id="growthPreviewText">Your growth story starts with today's path.</span>
+                        <span class="growth-preview-arrow">→</span>
+                    </button>
+
+                    <h3 class="section-heading profile-section-heading" data-i18n="profile.editSection">Edit profile
+                    </h3>
+
+                    <label class="profile-label" for="profileNameInput" data-i18n="profile.displayName">Display
+                        name</label>
+                    <input type="text" id="profileNameInput" class="profile-input"
+                        data-i18n-placeholder="profile.namePlaceholder2" placeholder="What should Nova call you?"
+                        maxlength="24">
+
+                    <label class="profile-label" data-i18n="profile.pickAvatar">Or pick an emoji avatar</label>
+                    <div class="avatar-row" id="avatarRow"></div>
+
+                    <button class="btn-primary" id="saveProfileBtn" data-i18n="profile.saveProfile">Save
+                        profile</button>
+
+                    <div class="account-card profile-account-card">
+                        <div class="profile-label profile-account-label" data-i18n="profile.accountSection">Account
+                        </div>
+                        <div class="profile-email-display" id="profileEmailDisplay"></div>
+                        <button class="btn-text btn-danger" id="signOutBtn" data-i18n="profile.signOut">Sign
+                            out</button>
+                    </div>
+                </div>
+
+                <button class="btn-ghost" id="profileDoneBtn" data-i18n="profile.back">Back</button>
+            </section>
+
+        </main>
+
+        <!-- ============ ACTIVITY DETAIL OVERLAY ============ -->
+        <div class="overlay" id="activityOverlay" hidden>
+            <div class="overlay-panel" id="overlayPanel" role="dialog" aria-modal="true" aria-labelledby="overlayTitle">
+                <button class="overlay-close" id="overlayClose" data-i18n-aria-label="overlay.close"
+                    aria-label="Close">✕</button>
+                <div id="overlayContent"></div>
+            </div>
+        </div>
+
+        <footer class="site-footer">
+            <span id="footerLogoSlot"></span>
+            <span data-i18n="footer.tagline">Lumen — leave better than you arrived.</span>
+        </footer>
+    </div>
+
+    <!-- Optional: Google Identity Services. Harmless if no client ID is set — button just won't render. -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="/assets/js/script.js"></script>
+</body>
+
+</html>
