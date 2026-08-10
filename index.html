@@ -390,7 +390,10 @@
                             data-i18n="profile.signInBtn">Sign in</button>
                     </form>
                     <div class="account-divider" id="accountDivider"><span data-i18n="profile.or">or</span></div>
-                    <div id="googleBtnSlot" class="google-btn-slot"></div>
+                    <div id="googleBtnSlot" class="google-btn-slot">
+                        <button type="button" class="btn-ghost-outline" id="googleSignInBtn"
+                            data-i18n="profile.continueWithGoogle">Continue with Google</button>
+                    </div>
                 </div>
 
                 <div class="profile-form" id="accountSignedIn" hidden>
@@ -461,9 +464,9 @@
         </footer>
     </div>
 
-    <!-- Optional: Google Identity Services. Harmless if no client ID is set — button just won't render. -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script src="/assets/js/script.js"></script>
+    <!-- type="module" is required here: script.js imports the Firebase Authentication SDK
+         directly from Firebase's CDN at the top of the file (see FIREBASE CONFIG there). -->
+    <script type="module" src="/assets/js/script.js"></script>
 </body>
 
 </html>

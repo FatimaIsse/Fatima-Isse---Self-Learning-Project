@@ -1,14 +1,62 @@
+/* =========================================================
+   FIREBASE — Authentication
+   Loaded as real ES module imports straight from Firebase's own CDN
+   (no npm install / bundler needed). This only works because index.html
+   loads this file as <script type="module">, which is what makes a
+   top-level `import` legal here.
+
+   ---- What to set up in the Firebase Console (console.firebase.google.com) ----
+   1. Create a project (or use an existing one).
+   2. Build → Authentication → "Get started".
+   3. "Sign-in method" tab → enable the "Email/Password" provider.
+   4. "Sign-in method" tab → enable the "Google" provider (pick a support
+      email when it asks for one).
+   5. Project settings (gear icon, top left) → "Your apps" → Add app → the
+      Web icon (</>) → register the app (Firebase Hosting is NOT required)
+      → it shows you a firebaseConfig object → copy those values into
+      FIREBASE_CONFIG below.
+   6. Authentication → Settings → "Authorized domains" → add every domain
+      you actually deploy Lumen to (localhost is already allowed by default,
+      which is enough for local testing).
+   No client secret and no backend/Cloud Functions are needed for any of
+   this — every value below is a public identifier, safe to ship as-is.
+========================================================= */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+import {
+    getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged,
+    createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail,
+    updateProfile, signOut, GoogleAuthProvider, signInWithPopup
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+
+// ↓↓↓ Replace every value below with the ones from your own Firebase project
+// (step 5 above). Leaving the placeholders in place just means sign-in will
+// show a clear "Firebase isn't set up yet" error instead of working.
+const FIREBASE_CONFIG = {
+    apiKey: "YOUR_FIREBASE_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_FIREBASE_APP_ID"
+};
+
+// Deliberately defensive: if the config above is still a placeholder, or
+// Firebase fails to load for any reason, the rest of Lumen (mood, activities,
+// Nova, progress, languages, animations) must keep working exactly as before
+// — only sign-in/sign-up itself should be affected.
+let firebaseAuth = null;
+let googleProvider = null;
+try {
+    const firebaseApp = initializeApp(FIREBASE_CONFIG);
+    firebaseAuth = getAuth(firebaseApp);
+    googleProvider = new GoogleAuthProvider();
+    setPersistence(firebaseAuth, browserLocalPersistence).catch(() => { });
+} catch (e) {
+    console.error('Lumen: Firebase failed to initialize — sign-in will be unavailable until FIREBASE_CONFIG (top of script.js) is filled in with your real project values.', e);
+}
+
 (function () {
     "use strict";
-
-    /* =========================================================
-       0. CONFIG — Google Sign-In
-       Paste your own OAuth Client ID from Google Cloud Console
-       (APIs & Services → Credentials → OAuth client ID → Web).
-       No client secret is ever needed for this front-end flow.
-       Leave blank to keep the local-profile-only fallback.
-    ========================================================= */
-    const GOOGLE_CLIENT_ID = ""; // e.g. "1234567890-abc.apps.googleusercontent.com"
 
     const hasWindowStorage = (typeof window !== 'undefined') && !!window.storage && typeof window.storage.get === 'function';
     // window.storage only exists inside a Claude.ai artifact preview — on a real, standalone
@@ -243,9 +291,16 @@
             'profile.saveProfile': 'Save profile', 'profile.signOut': 'Sign out', 'profile.back': 'Back',
             'profile.yourProfileHeading': 'Your profile', 'profile.yourProfileSub': 'Your account, your photo, and a shortcut into your growth.',
             'profile.savedOnDevice': 'Saved on this device',
-            'profile.passwordMismatch': "That password doesn't match this email on this device.",
-            'profile.forgotNote': "Lumen has no server, so there's no email reset link — this password only unlocks your profile on this browser. Try Continue with Google instead, or sign in with a new email to start fresh.",
+            'profile.passwordMismatch': "That password doesn't match this email.",
+            'profile.forgotNote': "Type your email above first, then tap 'Forgot password?' again to get a reset link.",
             'profile.signOutConfirm': "Sign out of Lumen? A profile is required to use the app, so you'll need to sign in again.",
+            'profile.continueWithGoogle': 'Continue with Google',
+            'profile.signInError': 'Something went wrong signing you in. Please try again.',
+            'profile.weakPassword': 'Choose a password with at least 6 characters.',
+            'profile.invalidEmailError': "That doesn't look like a valid email address.",
+            'profile.tooManyAttempts': 'Too many attempts — please wait a moment and try again.',
+            'profile.firebaseNotConfigured': "Sign-in isn't set up yet on this site. Please try again later.",
+            'profile.resetEmailSent': 'Check your email for a link to reset your password.',
             'overlay.close': 'Close', 'overlay.markComplete': 'Mark complete', 'overlay.completed': 'Completed ✓', 'overlay.tryDifferent': 'Try a different one',
             'footer.tagline': 'Lumen — leave better than you arrived.',
             'lang.switcherLabel': 'Language',
@@ -394,9 +449,16 @@
             'profile.saveProfile': 'حفظ الملف الشخصي', 'profile.signOut': 'تسجيل الخروج', 'profile.back': 'رجوع',
             'profile.yourProfileHeading': 'ملفك الشخصي', 'profile.yourProfileSub': 'حسابك، وصورتك، واختصار إلى نموّك.',
             'profile.savedOnDevice': 'محفوظ على هذا الجهاز',
-            'profile.passwordMismatch': 'كلمة المرور هذه لا تطابق هذا البريد على هذا الجهاز.',
-            'profile.forgotNote': 'لومن ليس له خادم، لذا لا يوجد رابط لاستعادة كلمة المرور عبر البريد — هذه الكلمة تفتح ملفك الشخصي على هذا المتصفح فقط. جرّب المتابعة بحساب جوجل، أو سجّل الدخول ببريد جديد للبدء من جديد.',
+            'profile.passwordMismatch': 'كلمة المرور هذه لا تطابق هذا البريد الإلكتروني.',
+            'profile.forgotNote': 'اكتب بريدك الإلكتروني أعلاه أولًا، ثم اضغط "نسيت كلمة المرور؟" مرة أخرى للحصول على رابط إعادة التعيين.',
             'profile.signOutConfirm': 'تسجيل الخروج من لومن؟ يلزم وجود حساب لاستخدام التطبيق، لذا ستحتاج لتسجيل الدخول مجددًا.',
+            'profile.continueWithGoogle': 'المتابعة بحساب جوجل',
+            'profile.signInError': 'حدث خطأ أثناء تسجيل الدخول. حاول مرة أخرى.',
+            'profile.weakPassword': 'اختر كلمة مرور مكوّنة من 6 أحرف على الأقل.',
+            'profile.invalidEmailError': 'هذا لا يبدو بريدًا إلكترونيًا صحيحًا.',
+            'profile.tooManyAttempts': 'محاولات كثيرة جدًا — يرجى الانتظار قليلًا والمحاولة مرة أخرى.',
+            'profile.firebaseNotConfigured': 'تسجيل الدخول غير مُفعّل على هذا الموقع بعد. يرجى المحاولة لاحقًا.',
+            'profile.resetEmailSent': 'تحقق من بريدك الإلكتروني للحصول على رابط إعادة تعيين كلمة المرور.',
             'overlay.close': 'إغلاق', 'overlay.markComplete': 'وضع علامة مكتمل', 'overlay.completed': 'مكتمل ✓', 'overlay.tryDifferent': 'جرّب واحدًا آخر',
             'footer.tagline': 'لومن — غادر أفضل مما وصلت.',
             'lang.switcherLabel': 'اللغة',
@@ -545,9 +607,16 @@
             'profile.saveProfile': 'Guardar perfil', 'profile.signOut': 'Cerrar sesión', 'profile.back': 'Atrás',
             'profile.yourProfileHeading': 'Tu perfil', 'profile.yourProfileSub': 'Tu cuenta, tu foto y un acceso directo a tu crecimiento.',
             'profile.savedOnDevice': 'Guardado en este dispositivo',
-            'profile.passwordMismatch': 'Esa contraseña no coincide con este correo en este dispositivo.',
-            'profile.forgotNote': 'Lumen no tiene servidor, así que no hay enlace de recuperación por correo — esta contraseña solo desbloquea tu perfil en este navegador. Prueba continuar con Google, o inicia sesión con un correo nuevo para empezar de cero.',
+            'profile.passwordMismatch': 'Esa contraseña no coincide con este correo.',
+            'profile.forgotNote': 'Escribe tu correo arriba primero, luego toca "¿Olvidaste tu contraseña?" de nuevo para recibir un enlace.',
             'profile.signOutConfirm': '¿Cerrar sesión de Lumen? Se necesita un perfil para usar la app, así que tendrás que iniciar sesión de nuevo.',
+            'profile.continueWithGoogle': 'Continuar con Google',
+            'profile.signInError': 'Algo salió mal al iniciar sesión. Inténtalo de nuevo.',
+            'profile.weakPassword': 'Elige una contraseña de al menos 6 caracteres.',
+            'profile.invalidEmailError': 'Eso no parece una dirección de correo válida.',
+            'profile.tooManyAttempts': 'Demasiados intentos — espera un momento y vuelve a intentarlo.',
+            'profile.firebaseNotConfigured': 'El inicio de sesión aún no está disponible en este sitio. Inténtalo más tarde.',
+            'profile.resetEmailSent': 'Revisa tu correo para ver el enlace para restablecer tu contraseña.',
             'overlay.close': 'Cerrar', 'overlay.markComplete': 'Marcar como completado', 'overlay.completed': 'Completado ✓', 'overlay.tryDifferent': 'Probar otro',
             'footer.tagline': 'Lumen — vete mejor de como llegaste.',
             'lang.switcherLabel': 'Idioma',
@@ -696,9 +765,16 @@
             'profile.saveProfile': 'Enregistrer le profil', 'profile.signOut': 'Se déconnecter', 'profile.back': 'Retour',
             'profile.yourProfileHeading': 'Ton profil', 'profile.yourProfileSub': 'Ton compte, ta photo, et un raccourci vers ta progression.',
             'profile.savedOnDevice': 'Enregistré sur cet appareil',
-            'profile.passwordMismatch': 'Ce mot de passe ne correspond pas à cet e-mail sur cet appareil.',
-            'profile.forgotNote': "Lumen n'a pas de serveur, donc il n'y a pas de lien de réinitialisation par e-mail — ce mot de passe déverrouille seulement ton profil sur ce navigateur. Essaie plutôt \"Continuer avec Google\", ou connecte-toi avec un nouvel e-mail pour repartir à zéro.",
+            'profile.passwordMismatch': 'Ce mot de passe ne correspond pas à cet e-mail.',
+            'profile.forgotNote': "Écris ton e-mail ci-dessus d'abord, puis appuie de nouveau sur \"Mot de passe oublié ?\" pour recevoir un lien.",
             'profile.signOutConfirm': "Se déconnecter de Lumen ? Un profil est nécessaire pour utiliser l'appli, tu devras donc te reconnecter.",
+            'profile.continueWithGoogle': 'Continuer avec Google',
+            'profile.signInError': "Une erreur s'est produite lors de la connexion. Réessaie.",
+            'profile.weakPassword': 'Choisis un mot de passe d\'au moins 6 caractères.',
+            'profile.invalidEmailError': "Cela ne ressemble pas à une adresse e-mail valide.",
+            'profile.tooManyAttempts': "Trop de tentatives — patiente un instant puis réessaie.",
+            'profile.firebaseNotConfigured': "La connexion n'est pas encore configurée sur ce site. Réessaie plus tard.",
+            'profile.resetEmailSent': 'Vérifie tes e-mails pour le lien de réinitialisation du mot de passe.',
             'overlay.close': 'Fermer', 'overlay.markComplete': 'Marquer comme terminé', 'overlay.completed': 'Terminé ✓', 'overlay.tryDifferent': 'Essayer autre chose',
             'footer.tagline': "Lumen — repars mieux que tu n'es arrivé.",
             'lang.switcherLabel': 'Langue',
@@ -1827,12 +1903,11 @@
             dayNotes: {} // { [isoDate]: text } — the free-text note from the path screen, keyed by day
         };
     }
-    function defaultIdentity() { return { signedIn: false, method: null, name: '', avatar: '', email: '', photo: '' }; }
+    function defaultIdentity() { return { signedIn: false, method: null, name: '', avatar: '', email: '', photo: '', uid: '' }; }
 
     let profile = defaultProfile();
     let stats = defaultStats();
     let identity = defaultIdentity();
-    let accounts = {}; // { [email]: sha256(password) } — device-local only, gates repeat sign-in with the same email
     let todaysPath = [];
     let deprioritizedGoal = null;
     let profileReturnTo = 'welcome';
@@ -1853,7 +1928,10 @@
        5. PERSISTENCE
     ========================================================= */
     async function saveState() {
-        const payload = JSON.stringify({ stats, lastProfile: profile, identity, accounts, lang: currentLang, audioEnabled, theme });
+        // No passwords or credentials in here — Firebase Authentication owns those entirely.
+        // `identity` is just a local cache of the signed-in Firebase user's display info
+        // (name/email/avatar/photo/uid), used to paint the UI instantly on load.
+        const payload = JSON.stringify({ stats, lastProfile: profile, identity, lang: currentLang, audioEnabled, theme });
         if (hasWindowStorage) {
             try { await window.storage.set('bloom-state', payload, false); }
             catch (e) { console.error('Lumen: window.storage save failed', e); }
@@ -1883,7 +1961,6 @@
             Object.keys(GOAL_META).forEach(g => { if (!stats.goalStats[g]) stats.goalStats[g] = { shown: 0, completed: 0 }; });
             if (parsed.lastProfile) profile = Object.assign(defaultProfile(), parsed.lastProfile);
             if (parsed.identity) identity = Object.assign(defaultIdentity(), parsed.identity);
-            if (parsed.accounts) accounts = parsed.accounts;
             if (parsed.lang && LANGUAGES[parsed.lang]) currentLang = parsed.lang;
             if (typeof parsed.audioEnabled === 'boolean') audioEnabled = parsed.audioEnabled;
             if (parsed.theme === 'light' || parsed.theme === 'dark') theme = parsed.theme;
@@ -3253,26 +3330,37 @@
     });
 
     /* =========================================================
-       16. PROFILE / ACCOUNT (Google Sign-In + a lightweight,
-       honestly-scoped email+password profile — this is a static
-       site with no server, so there's no real cross-device account
-       system or password recovery. The password is hashed and
-       checked locally to gate repeat sign-in on THIS device/browser
-       only; Google Identity Services is the only path here that is
-       real, server-verified authentication.)
+       16. PROFILE / ACCOUNT — real, server-verified authentication via
+       Firebase Auth (email/password + Google). No passwords ever touch
+       localStorage; Firebase's own backend owns credential storage and
+       verification. `identity` stays a local display-info cache only
+       (name/email/avatar/photo/uid) so the UI can paint instantly.
     ========================================================= */
-    async function hashPassword(pw) {
-        if (window.crypto && window.crypto.subtle) {
-            const bytes = new TextEncoder().encode(pw);
-            const digest = await crypto.subtle.digest('SHA-256', bytes);
-            return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+    // Maps a handful of common Firebase Auth error codes to the same friendly,
+    // in-place form-note UI the sign-in form already had — everything else
+    // (unexpected codes) falls back to a generic message rather than a raw
+    // Firebase error string.
+    function firebaseAuthErrorMessage(err) {
+        const code = (err && err.code) || '';
+        // The "config still has placeholder values" codes vary a bit by SDK version — e.g. a
+        // bad apiKey currently comes back as 'auth/api-key-not-valid.-please-pass-a-valid-api-key.'
+        // rather than a short fixed code — so this checks by substring instead of exact match.
+        if (code.indexOf('api-key') !== -1 || code === 'auth/app-not-authorized' || code === 'auth/invalid-app-credential') {
+            return t('profile.firebaseNotConfigured');
         }
-        // SubtleCrypto needs a secure context (https, or localhost) — on a plain http host it's
-        // unavailable. This fallback isn't cryptographically strong, but still avoids storing
-        // the raw password, so sign-in degrades gracefully instead of throwing.
-        let h = 0;
-        for (let i = 0; i < pw.length; i++) { h = (Math.imul(31, h) + pw.charCodeAt(i)) | 0; }
-        return 'fnv' + (h >>> 0).toString(16);
+        switch (code) {
+            case 'auth/wrong-password':
+            case 'auth/invalid-credential':
+                return t('profile.passwordMismatch');
+            case 'auth/weak-password':
+                return t('profile.weakPassword');
+            case 'auth/invalid-email':
+                return t('profile.invalidEmailError');
+            case 'auth/too-many-requests':
+                return t('profile.tooManyAttempts');
+            default:
+                return t('profile.signInError');
+        }
     }
 
     function updateProfileBtnDisplay() {
@@ -3367,7 +3455,6 @@
             sub.textContent = t('profile.signInSub');
             signedOutEl.hidden = false;
             signedInEl.hidden = true;
-            setupGoogleButton();
         }
     }
 
@@ -3392,33 +3479,77 @@
         const email = document.getElementById('emailSignInEmail').value.trim().toLowerCase();
         const password = document.getElementById('emailSignInPassword').value;
         const noteEl = document.getElementById('emailSignInNote');
+        const submitBtn = document.getElementById('emailSignInSubmit');
         noteEl.hidden = true;
         noteEl.classList.remove('form-error');
         if (!name || !email || !password) return;
-
-        const hash = await hashPassword(password);
-        const existingHash = accounts[email];
-        if (existingHash && existingHash !== hash) {
-            noteEl.textContent = t('profile.passwordMismatch');
+        if (!firebaseAuth) {
+            noteEl.textContent = t('profile.firebaseNotConfigured');
             noteEl.classList.add('form-error');
             noteEl.hidden = false;
             return;
         }
-        accounts[email] = hash; // new email: register it; known email: hash already matched above
 
-        identity.signedIn = true;
-        identity.method = 'email';
-        identity.name = name;
-        identity.email = email;
-        if (!identity.avatar && !identity.photo) identity.avatar = pick(AVATAR_CHOICES);
-        completeSignIn();
+        submitBtn.disabled = true;
+        try {
+            // One form does both sign-in and sign-up, same as before: try signing in with this
+            // email/password first, and only register a brand-new account if Firebase says that
+            // email doesn't exist yet. A wrong password on a KNOWN email falls through to the
+            // catch below and shows the same "doesn't match" note as it always did.
+            let user;
+            try {
+                user = (await signInWithEmailAndPassword(firebaseAuth, email, password)).user;
+            } catch (err) {
+                if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+                    user = (await createUserWithEmailAndPassword(firebaseAuth, email, password)).user;
+                } else {
+                    throw err;
+                }
+            }
+            if (user.displayName !== name) {
+                try { await updateProfile(user, { displayName: name }); } catch (e) { /* non-fatal — local name still gets set below */ }
+            }
+
+            identity.signedIn = true;
+            identity.method = 'email';
+            identity.name = name;
+            identity.email = user.email || email;
+            identity.uid = user.uid;
+            if (!identity.avatar && !identity.photo) identity.avatar = pick(AVATAR_CHOICES);
+            completeSignIn();
+        } catch (err) {
+            noteEl.textContent = firebaseAuthErrorMessage(err);
+            noteEl.classList.add('form-error');
+            noteEl.hidden = false;
+        } finally {
+            submitBtn.disabled = false;
+        }
     });
 
-    document.getElementById('forgotPasswordBtn').addEventListener('click', () => {
+    document.getElementById('forgotPasswordBtn').addEventListener('click', async () => {
+        const email = document.getElementById('emailSignInEmail').value.trim().toLowerCase();
         const noteEl = document.getElementById('emailSignInNote');
         noteEl.classList.remove('form-error');
-        noteEl.textContent = t('profile.forgotNote');
-        noteEl.hidden = false;
+        if (!email) {
+            noteEl.textContent = t('profile.forgotNote');
+            noteEl.hidden = false;
+            return;
+        }
+        if (!firebaseAuth) {
+            noteEl.textContent = t('profile.firebaseNotConfigured');
+            noteEl.classList.add('form-error');
+            noteEl.hidden = false;
+            return;
+        }
+        try {
+            await sendPasswordResetEmail(firebaseAuth, email);
+            noteEl.textContent = t('profile.resetEmailSent');
+            noteEl.hidden = false;
+        } catch (err) {
+            noteEl.textContent = firebaseAuthErrorMessage(err);
+            noteEl.classList.add('form-error');
+            noteEl.hidden = false;
+        }
     });
 
     document.getElementById('togglePasswordBtn').addEventListener('click', () => {
@@ -3433,12 +3564,20 @@
 
     document.getElementById('saveProfileBtn').addEventListener('click', async () => {
         identity.name = document.getElementById('profileNameInput').value.trim().slice(0, 24);
+        // Keep the Firebase account's own displayName in sync too — best-effort; the local
+        // profile still saves below even if this fails (offline, etc.).
+        if (firebaseAuth && firebaseAuth.currentUser) {
+            try { await updateProfile(firebaseAuth.currentUser, { displayName: identity.name }); } catch (e) { /* non-fatal */ }
+        }
         await saveState();
         updateProfileBtnDisplay();
         showScreen(profileReturnTo || 'welcome');
     });
     document.getElementById('signOutBtn').addEventListener('click', async () => {
         if (!window.confirm(t('profile.signOutConfirm'))) return;
+        if (firebaseAuth) {
+            try { await signOut(firebaseAuth); } catch (e) { console.warn('Lumen: Firebase sign-out failed', e); }
+        }
         identity = defaultIdentity();
         await saveState();
         updateProfileBtnDisplay();
@@ -3492,36 +3631,35 @@
         });
     }
 
-    let googleInitialized = false;
-    function setupGoogleButton() {
-        const slot = document.getElementById('googleBtnSlot');
-        const divider = document.getElementById('accountDivider');
-        slot.innerHTML = '';
-        // No client id configured, or the Google script hasn't loaded — hide the "or / Continue
-        // with Google" section entirely rather than showing a dead, unexplained empty gap.
-        const available = !!GOOGLE_CLIENT_ID && typeof google !== 'undefined' && google.accounts && google.accounts.id;
-        slot.hidden = !available;
-        if (divider) divider.hidden = !available;
-        if (!available) return;
+    document.getElementById('googleSignInBtn').addEventListener('click', async () => {
+        const noteEl = document.getElementById('emailSignInNote');
+        noteEl.hidden = true;
+        noteEl.classList.remove('form-error');
+        if (!firebaseAuth || !googleProvider) {
+            noteEl.textContent = t('profile.firebaseNotConfigured');
+            noteEl.classList.add('form-error');
+            noteEl.hidden = false;
+            return;
+        }
         try {
-            if (!googleInitialized) {
-                google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogleCredential });
-                googleInitialized = true;
-            }
-            google.accounts.id.renderButton(slot, { theme: 'outline', size: 'large', shape: 'pill', text: 'continue_with', width: 280 });
-        } catch (e) { console.warn('Google Sign-In unavailable:', e); }
-    }
-    function handleGoogleCredential(response) {
-        try {
-            const payload = JSON.parse(atob(response.credential.split('.')[1]));
+            const user = (await signInWithPopup(firebaseAuth, googleProvider)).user;
             identity.signedIn = true;
             identity.method = 'google';
-            identity.name = identity.name || payload.given_name || payload.name || '';
-            identity.email = payload.email || '';
-            if (!identity.avatar && !identity.photo) identity.avatar = '🌸';
+            identity.name = identity.name || user.displayName || '';
+            identity.email = user.email || '';
+            identity.uid = user.uid;
+            if (!identity.avatar && !identity.photo) {
+                if (user.photoURL) identity.photo = user.photoURL; // Google's own hosted avatar — a real URL, safe to store as-is
+                else identity.avatar = '🌸';
+            }
             completeSignIn();
-        } catch (e) { console.warn('Could not parse Google credential', e); }
-    }
+        } catch (err) {
+            if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') return; // they just closed it
+            noteEl.textContent = firebaseAuthErrorMessage(err);
+            noteEl.classList.add('form-error');
+            noteEl.hidden = false;
+        }
+    });
 
     /* =========================================================
        16b. LANGUAGE SWITCHING
@@ -3595,21 +3733,60 @@
     }
 
     /* =========================================================
+       16c. FIREBASE AUTH STATE
+       Firebase persists sessions itself (browserLocalPersistence, set up
+       top of file), so "stay signed in after refresh" just means: wait for
+       Firebase's first onAuthStateChanged callback — which fires with the
+       restored user (or null) shortly after page load — before deciding
+       whether to show the sign-in screen.
+    ========================================================= */
+    let resolveInitialAuthCheck;
+    const initialAuthCheck = new Promise((resolve) => { resolveInitialAuthCheck = resolve; });
+    if (firebaseAuth) {
+        onAuthStateChanged(firebaseAuth, (user) => {
+            if (user) {
+                identity.signedIn = true;
+                identity.uid = user.uid;
+                identity.email = user.email || '';
+                identity.method = (user.providerData[0] && user.providerData[0].providerId === 'google.com') ? 'google' : 'email';
+                if (!identity.name) identity.name = user.displayName || '';
+                if (!identity.avatar && !identity.photo) {
+                    if (user.photoURL) identity.photo = user.photoURL;
+                    else identity.avatar = pick(AVATAR_CHOICES);
+                }
+            } else if (identity.signedIn) {
+                // The locally cached profile (from a previous visit) says signed-in, but Firebase
+                // — the actual source of truth — has no session. Trust Firebase: a locally stale
+                // "signed in" flag shouldn't grant access to signed-in-only features.
+                identity = defaultIdentity();
+                saveState();
+            }
+            resolveInitialAuthCheck();
+        });
+    } else {
+        resolveInitialAuthCheck(); // Firebase isn't configured — fall straight through to the sign-in screen
+    }
+
+    /* =========================================================
        17. INIT
     ========================================================= */
     injectLogos();
     setupLangSwitcher();
-    loadState().then(() => {
+    loadState().then(async () => {
         applyLanguage(currentLang); // currentLang may have just been restored from saved state
         applyTheme(theme); // theme may have just been restored from saved state (or system preference)
         updateStreakChip();
         armAudioAutoResume(); // resumes the mood ambience on the first gesture, if it was left on
+        await initialAuthCheck; // let Firebase confirm the real signed-in state before gating on it
         // A profile is mandatory — anyone not already signed in on this device lands on the
         // sign-in screen first, not the marketing homepage.
         if (!identity.signedIn) {
             profileReturnTo = 'welcome';
             renderProfileScreen();
             showScreen('profile');
+        } else {
+            saveState(); // persist whatever Firebase just confirmed (uid/email/method)
+            updateProfileBtnDisplay();
         }
     });
 
