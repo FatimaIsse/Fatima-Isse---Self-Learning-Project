@@ -86,6 +86,18 @@
         creative: { mode: 'arp', notes: [523.25, 587.33, 698.46, 783.99, 880.00, 698.46], tempo: 0.3, type: 'sine', filterHz: 3200, gain: 0.06 }
     };
 
+    // Light-mode counterpart to MOOD_AUDIO_RECIPE — same mood, same shape (pad/arp), but pitched
+    // up and opened up brighter (higher filter cutoff, airier), so it reads as "daylight" rather
+    // than the moodier, darker-filtered night version. Swapped in by startMoodAmbience() based on
+    // the current light/dark theme, and crossfaded whenever the theme toggles mid-ambience.
+    const MOOD_AUDIO_RECIPE_LIGHT = {
+        energized: { mode: 'arp', notes: [440.00, 523.25, 659.25, 880.00, 659.25, 523.25], tempo: 0.2, type: 'triangle', filterHz: 4200, gain: 0.06 },
+        calm: { mode: 'pad', freqs: [392.00, 493.88, 587.33], type: 'sine', filterHz: 1400, lfoHz: 0.05, lfoDepth: 50, gain: 0.04, bellFreq: 1567.98, bellEvery: 8 },
+        tired: { mode: 'pad', freqs: [261.63, 329.63], type: 'sine', filterHz: 900, lfoHz: 0.035, lfoDepth: 30, gain: 0.035 },
+        stressed: { mode: 'pad', freqs: [293.66, 440.00, 587.33], type: 'sine', filterHz: 1100, lfoHz: 0.045, lfoDepth: 35, gain: 0.032, bellFreq: 1174.66, bellEvery: 11 },
+        creative: { mode: 'arp', notes: [523.25, 587.33, 698.46, 783.99, 880.00, 698.46], tempo: 0.28, type: 'triangle', filterHz: 4500, gain: 0.055 }
+    };
+
     // Keyed the same way as LANGUAGE_SETS' `language` field (an unchanged lookup key,
     // never localized) — just the flag shown on the language-picker card.
     const LANGUAGE_META = {
@@ -226,6 +238,7 @@
             'profile.editSection': 'Edit profile', 'profile.accountSection': 'Account',
             'nav.moodLabel': 'Mood',
             'nav.audioOn': 'Mood sound on', 'nav.audioOff': 'Mood sound off',
+            'nav.themeToLight': 'Switch to light mode', 'nav.themeToDark': 'Switch to dark mode',
             'profile.pickAvatar': 'Or pick an emoji avatar', 'profile.moreAvatars': '+%n% more', 'profile.showLessAvatars': 'Show less',
             'profile.saveProfile': 'Save profile', 'profile.signOut': 'Sign out', 'profile.back': 'Back',
             'profile.yourProfileHeading': 'Your profile', 'profile.yourProfileSub': 'Your account, your photo, and a shortcut into your growth.',
@@ -376,6 +389,7 @@
             'profile.editSection': 'تعديل الملف الشخصي', 'profile.accountSection': 'الحساب',
             'nav.moodLabel': 'المزاج',
             'nav.audioOn': 'صوت المزاج مفعّل', 'nav.audioOff': 'صوت المزاج متوقف',
+            'nav.themeToLight': 'التبديل إلى الوضع الفاتح', 'nav.themeToDark': 'التبديل إلى الوضع الداكن',
             'profile.pickAvatar': 'أو اختر صورة رمزية تعبيرية', 'profile.moreAvatars': '+%n% المزيد', 'profile.showLessAvatars': 'عرض أقل',
             'profile.saveProfile': 'حفظ الملف الشخصي', 'profile.signOut': 'تسجيل الخروج', 'profile.back': 'رجوع',
             'profile.yourProfileHeading': 'ملفك الشخصي', 'profile.yourProfileSub': 'حسابك، وصورتك، واختصار إلى نموّك.',
@@ -526,6 +540,7 @@
             'profile.editSection': 'Editar perfil', 'profile.accountSection': 'Cuenta',
             'nav.moodLabel': 'Ánimo',
             'nav.audioOn': 'Sonido de ánimo activado', 'nav.audioOff': 'Sonido de ánimo desactivado',
+            'nav.themeToLight': 'Cambiar a modo claro', 'nav.themeToDark': 'Cambiar a modo oscuro',
             'profile.pickAvatar': 'O elige un avatar con emoji', 'profile.moreAvatars': '+%n% más', 'profile.showLessAvatars': 'Ver menos',
             'profile.saveProfile': 'Guardar perfil', 'profile.signOut': 'Cerrar sesión', 'profile.back': 'Atrás',
             'profile.yourProfileHeading': 'Tu perfil', 'profile.yourProfileSub': 'Tu cuenta, tu foto y un acceso directo a tu crecimiento.',
@@ -676,6 +691,7 @@
             'profile.editSection': 'Modifier le profil', 'profile.accountSection': 'Compte',
             'nav.moodLabel': 'Humeur',
             'nav.audioOn': "Son d'ambiance activé", 'nav.audioOff': "Son d'ambiance désactivé",
+            'nav.themeToLight': 'Passer au mode clair', 'nav.themeToDark': 'Passer au mode sombre',
             'profile.pickAvatar': 'Ou choisis un avatar emoji', 'profile.moreAvatars': '+%n% de plus', 'profile.showLessAvatars': 'Afficher moins',
             'profile.saveProfile': 'Enregistrer le profil', 'profile.signOut': 'Se déconnecter', 'profile.back': 'Retour',
             'profile.yourProfileHeading': 'Ton profil', 'profile.yourProfileSub': 'Ton compte, ta photo, et un raccourci vers ta progression.',
@@ -1822,6 +1838,7 @@
     let profileReturnTo = 'welcome';
     let pendingAfterSignIn = null; // action to resume automatically right after a gated sign-in completes
     let audioEnabled = false; // whether the mood ambience should be audible — see AMBIENT MOOD AUDIO below
+    let theme = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
     let overlayActiveIndex = null;
     let avatarPickerExpanded = false; // UI-only — whether the "+N more" emoji avatars are shown
     let pickedIdentity = null; // which IDENTITY_META entry step 1 picked — drives step 3's subject choices
@@ -1836,7 +1853,7 @@
        5. PERSISTENCE
     ========================================================= */
     async function saveState() {
-        const payload = JSON.stringify({ stats, lastProfile: profile, identity, accounts, lang: currentLang, audioEnabled });
+        const payload = JSON.stringify({ stats, lastProfile: profile, identity, accounts, lang: currentLang, audioEnabled, theme });
         if (hasWindowStorage) {
             try { await window.storage.set('bloom-state', payload, false); }
             catch (e) { console.error('Lumen: window.storage save failed', e); }
@@ -1869,6 +1886,7 @@
             if (parsed.accounts) accounts = parsed.accounts;
             if (parsed.lang && LANGUAGES[parsed.lang]) currentLang = parsed.lang;
             if (typeof parsed.audioEnabled === 'boolean') audioEnabled = parsed.audioEnabled;
+            if (parsed.theme === 'light' || parsed.theme === 'dark') theme = parsed.theme;
             updateProfileBtnDisplay();
             updateStreakChip();
         } catch (e) { /* saved data was corrupt or unreadable — start fresh rather than crash */ }
@@ -2401,7 +2419,8 @@
     function startMoodAmbience(mood) {
         const ctx = ensureAudioContext();
         if (!ctx) return;
-        const recipe = MOOD_AUDIO_RECIPE[mood] || MOOD_AUDIO_RECIPE.calm;
+        const table = theme === 'light' ? MOOD_AUDIO_RECIPE_LIGHT : MOOD_AUDIO_RECIPE;
+        const recipe = table[mood] || table.calm;
         if (recipe.mode === 'arp') startArp(ctx, recipe);
         else startPad(ctx, recipe);
     }
@@ -2435,6 +2454,40 @@
         saveState();
     }
     document.getElementById('audioToggleBtn').addEventListener('click', toggleMoodAudio);
+
+    /* =========================================================
+       11.6. LIGHT / DARK MODE
+       Doesn't touch a single mood/brand color — data-theme just controls how much white
+       or black gets mixed into those colors in CSS (see style.css). The one thing this
+       layer does own is re-picking the mood ambience's audio recipe: MOOD_AUDIO_RECIPE_LIGHT
+       is a brighter, higher-pitched take on the same mood sounds, so flipping the toggle
+       while audio is on crossfades to a sound that actually fits daylight vs. night.
+    ========================================================= */
+    function setThemeToggleUI() {
+        const btn = document.getElementById('themeToggleBtn');
+        if (!btn) return;
+        const isLight = theme === 'light';
+        btn.textContent = isLight ? '☀️' : '🌙';
+        btn.setAttribute('aria-pressed', isLight ? 'true' : 'false');
+        const label = t(isLight ? 'nav.themeToDark' : 'nav.themeToLight');
+        btn.setAttribute('aria-label', label);
+        btn.title = label;
+    }
+
+    function applyTheme(next) {
+        theme = next === 'light' ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', theme);
+        setThemeToggleUI();
+        // Re-picks MOOD_AUDIO_RECIPE vs MOOD_AUDIO_RECIPE_LIGHT for whatever mood is already
+        // playing, so the ambience actually changes character with the theme, not just color.
+        if (audioEnabled && currentMoodNodes) crossfadeMoodAmbience(profile.mood || 'calm');
+    }
+
+    function toggleTheme() {
+        applyTheme(theme === 'light' ? 'dark' : 'light');
+        saveState();
+    }
+    document.getElementById('themeToggleBtn').addEventListener('click', toggleTheme);
 
     // If audio was left on last visit, the browser still won't let it start until the very
     // first gesture on this new page load — catch that gesture, wherever it happens, and
@@ -3548,6 +3601,7 @@
     setupLangSwitcher();
     loadState().then(() => {
         applyLanguage(currentLang); // currentLang may have just been restored from saved state
+        applyTheme(theme); // theme may have just been restored from saved state (or system preference)
         updateStreakChip();
         armAudioAutoResume(); // resumes the mood ambience on the first gesture, if it was left on
         // A profile is mandatory — anyone not already signed in on this device lands on the

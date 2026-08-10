@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 
-<body data-mood="none">
+<body data-mood="none" data-theme="dark">
     <div class="ambient-bg" aria-hidden="true">
         <span class="ambient-starfield"></span>
         <span class="ambient-nebula ambient-nebula-a"></span>
@@ -54,6 +54,9 @@
                     </div>
                     <select class="lang-switcher mood-switcher" id="moodSwitcher" data-i18n-aria-label="nav.moodLabel"
                         aria-label="Mood"></select>
+                    <button class="audio-toggle-btn theme-toggle-btn" id="themeToggleBtn" type="button"
+                        aria-pressed="false" data-i18n-aria-label="nav.themeToLight" aria-label="Switch to light mode"
+                        data-i18n-title="nav.themeToLight" title="Switch to light mode">🌙</button>
                     <button class="audio-toggle-btn" id="audioToggleBtn" type="button" aria-pressed="false"
                         data-i18n-aria-label="nav.audioOff" aria-label="Turn on mood sound"
                         data-i18n-title="nav.audioOff" title="Turn on mood sound">🔇</button>
