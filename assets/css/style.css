@@ -31,13 +31,6 @@
     --font-display: 'Fraunces', serif;
     --font-body: 'Manrope', sans-serif;
 
-    /* ---- theme layer (dark = default/identity mapping) ---- */
-    --ink-1: var(--mood-ink-1);
-    --ink-2: var(--mood-ink-2);
-    --ink-3: var(--mood-ink-3);
-    --ink-bright: var(--mood-ink-bright);
-    --paper: var(--mood-paper);
-    --paper-dim: var(--mood-paper-dim);
     /* R, G, B triplet for the low-opacity "chrome" overlays (card fills, borders, hovers)
        sprinkled through this file as rgba(var(--wash), N) — white on dark, black on light,
        same opacities either way so the surface hierarchy reads identically in both modes. */
@@ -183,6 +176,22 @@ body {
 }
 
 body {
+    /* ---- theme layer (dark = default/identity mapping) ----
+       Deliberately declared on `body`, not `:root` — mood overrides live on
+       body[data-mood="..."], and :root only matches <html>. If this lived on :root,
+       --ink-1 would be computed once from html's own (never-mood-overridden)
+       --mood-ink-1 and just inherit down unchanged, never reacting to a mood switch —
+       exactly the "background stopped changing with mood" bug this fixes. Body sees
+       its own (mood-conditioned) --mood-ink-* values directly, so this re-derives
+       correctly every time. body[data-theme="light"] below overrides these same
+       properties with the color-mix version, at higher specificity. */
+    --ink-1: var(--mood-ink-1);
+    --ink-2: var(--mood-ink-2);
+    --ink-3: var(--mood-ink-3);
+    --ink-bright: var(--mood-ink-bright);
+    --paper: var(--mood-paper);
+    --paper-dim: var(--mood-paper-dim);
+
     min-height: 100vh;
     background: var(--ink-1);
     color: var(--paper);
