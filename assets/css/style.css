@@ -153,10 +153,10 @@ body[data-mood="creative"] {
    rgba(var(--wash), N) automatically becomes a dark tint on the new light background instead
    of an invisible white-on-white one. */
 body[data-theme="light"] {
-    --ink-1: color-mix(in srgb, var(--mood-ink-1) 4%, white 96%);
-    --ink-2: color-mix(in srgb, var(--mood-ink-2) 7%, white 93%);
-    --ink-3: color-mix(in srgb, var(--mood-ink-3) 11%, white 89%);
-    --ink-bright: color-mix(in srgb, var(--mood-ink-bright) 45%, white 55%);
+    --ink-1: color-mix(in srgb, var(--mood-ink-1) 14%, white 86%);
+    --ink-2: color-mix(in srgb, var(--mood-ink-2) 19%, white 81%);
+    --ink-3: color-mix(in srgb, var(--mood-ink-3) 25%, white 75%);
+    --ink-bright: color-mix(in srgb, var(--mood-ink-bright) 48%, white 52%);
     --paper: color-mix(in srgb, var(--mood-paper) 12%, black 88%);
     --paper-dim: color-mix(in srgb, var(--mood-paper-dim) 55%, black 45%);
     --wash: 0, 0, 0;
