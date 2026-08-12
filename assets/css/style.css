@@ -417,8 +417,13 @@ code {
     }
 }
 
-/* A single shooting star that streaks across, then rests for most of the cycle.
-   Falls from top-left toward bottom-right — the tail angle is mirrored to match. */
+/* A single shooting star that streaks across, then rests for most of the cycle. It travels
+   from top-left toward bottom-right (see the translate(85vw, 60vh) below, roughly a 24°
+   downward diagonal on a typical wide viewport) — the tail is pinned to the star's own
+   position (transform-origin: left center) and rotated to point back along that same ~24°
+   line, so it trails directly behind the star instead of jutting off at a mismatched angle.
+   The gradient puts the bright end at the star (the pivot) fading to transparent along the
+   tail, like a real trail, rather than the reverse. */
 .ambient-comet {
     position: absolute;
     top: 8%;
@@ -438,8 +443,8 @@ code {
     left: 50%;
     width: 110px;
     height: 1.5px;
-    background: linear-gradient(to left, var(--accent-glow), transparent);
-    transform: translateY(-50%) rotate(335deg);
+    background: linear-gradient(to right, var(--accent-glow), transparent);
+    transform: translateY(-50%) rotate(204deg);
     transform-origin: left center;
 }
 
@@ -688,6 +693,16 @@ code {
     background: var(--accent-soft);
     border-color: var(--accent);
     color: var(--paper);
+}
+
+.audio-toggle-btn svg {
+    width: 17px;
+    height: 17px;
+    transition: transform 0.18s ease;
+}
+
+.audio-toggle-btn:hover svg {
+    transform: scale(1.1);
 }
 
 .topnav {

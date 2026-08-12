@@ -134,16 +134,28 @@ try {
         creative: { mode: 'arp', notes: [523.25, 587.33, 698.46, 783.99, 880.00, 698.46], tempo: 0.3, type: 'sine', filterHz: 3200, gain: 0.06 }
     };
 
-    // Light-mode counterpart to MOOD_AUDIO_RECIPE — same mood, same shape (pad/arp), but pitched
-    // up and opened up brighter (higher filter cutoff, airier), so it reads as "daylight" rather
-    // than the moodier, darker-filtered night version. Swapped in by startMoodAmbience() based on
-    // the current light/dark theme, and crossfaded whenever the theme toggles mid-ambience.
+    // Light-mode counterpart to MOOD_AUDIO_RECIPE — same mood, same shape (pad/arp), but a
+    // genuinely different arrangement, not the dark version transposed up an octave or sped up.
+    // Each one uses a different chord/scale, voicing, and (for the arps) note contour and count,
+    // so the loop itself sounds like a different piece of music, not the night version playing
+    // faster. Swapped in by startMoodAmbience() based on the current light/dark theme, and
+    // crossfaded whenever the theme toggles mid-ambience.
     const MOOD_AUDIO_RECIPE_LIGHT = {
-        energized: { mode: 'arp', notes: [440.00, 523.25, 659.25, 880.00, 659.25, 523.25], tempo: 0.2, type: 'triangle', filterHz: 4200, gain: 0.06 },
-        calm: { mode: 'pad', freqs: [392.00, 493.88, 587.33], type: 'sine', filterHz: 1400, lfoHz: 0.05, lfoDepth: 50, gain: 0.04, bellFreq: 1567.98, bellEvery: 8 },
-        tired: { mode: 'pad', freqs: [261.63, 329.63], type: 'sine', filterHz: 900, lfoHz: 0.035, lfoDepth: 30, gain: 0.035 },
-        stressed: { mode: 'pad', freqs: [293.66, 440.00, 587.33], type: 'sine', filterHz: 1100, lfoHz: 0.045, lfoDepth: 35, gain: 0.032, bellFreq: 1174.66, bellEvery: 11 },
-        creative: { mode: 'arp', notes: [523.25, 587.33, 698.46, 783.99, 880.00, 698.46], tempo: 0.28, type: 'triangle', filterHz: 4500, gain: 0.055 }
+        // Dark is an A-minor-ish 6-note run; light is a brighter C-major 7-note walk up-and-back
+        // on a square wave instead of triangle — a different key, contour, and timbre, not just tempo.
+        energized: { mode: 'arp', notes: [523.25, 659.25, 783.99, 1046.50, 987.77, 783.99, 659.25], tempo: 0.16, type: 'square', filterHz: 4200, gain: 0.045 },
+        // Dark is a close G-major triad (G3 B3 D4); light is an open, spread D-major voicing
+        // (D4 F#4 A4 D5) — a different chord entirely, not the same one shifted up an octave.
+        calm: { mode: 'pad', freqs: [293.66, 369.99, 440.00, 587.33], type: 'sine', filterHz: 1500, lfoHz: 0.06, lfoDepth: 55, gain: 0.036, bellFreq: 880.00, bellEvery: 7 },
+        // Dark is a bare, sparse open fifth (C3 G3); light is a fuller, cozy Cmaj7 voicing —
+        // still soft and unhurried, but a genuinely different chord quality.
+        tired: { mode: 'pad', freqs: [261.63, 329.63, 392.00, 493.88], type: 'sine', filterHz: 1100, lfoHz: 0.04, lfoDepth: 28, gain: 0.032 },
+        // Dark is a tense bare D open-fifth-plus-octave; light is an open, suspended E voicing
+        // (Esus4-ish) — less "stuck," a different harmonic color rather than the same tension up high.
+        stressed: { mode: 'pad', freqs: [329.63, 440.00, 493.88, 659.25], type: 'sine', filterHz: 1300, lfoHz: 0.05, lfoDepth: 38, gain: 0.03, bellFreq: 987.77, bellEvery: 10 },
+        // Dark climbs a C-major-ish 6-note run; light is a different, skippier 6-note contour
+        // built around D/A/B instead — a different melody, not the same one restated.
+        creative: { mode: 'arp', notes: [587.33, 659.25, 880.00, 987.77, 783.99, 659.25], tempo: 0.22, type: 'triangle', filterHz: 4200, gain: 0.05 }
     };
 
     // Keyed the same way as LANGUAGE_SETS' `language` field (an unchanged lookup key,
@@ -2524,10 +2536,17 @@ try {
         startMoodAmbience(mood);
     }
 
+    // Speaker glyph shared by both states — only the tip (sound waves vs. an X) changes, same
+    // stroke-icon language as the rest of the app (eye/back-arrow/feature icons: 24x24 viewBox,
+    // currentColor stroke, no fill) rather than an emoji.
+    const ICON_SPEAKER_BODY = '<path d="M3 9v6h4l5 5V4L7 9H3z" stroke-linecap="round" stroke-linejoin="round"/>';
+    const ICON_AUDIO_ON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">${ICON_SPEAKER_BODY}<path d="M15.5 8.5a5 5 0 0 1 0 7" stroke-linecap="round"/><path d="M18.6 5.4a9 9 0 0 1 0 13.2" stroke-linecap="round"/></svg>`;
+    const ICON_AUDIO_OFF = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">${ICON_SPEAKER_BODY}<path d="M16 9l6 6M22 9l-6 6" stroke-linecap="round"/></svg>`;
+
     function setAudioToggleUI() {
         const btn = document.getElementById('audioToggleBtn');
         if (!btn) return;
-        btn.textContent = audioEnabled ? '🔊' : '🔇';
+        btn.innerHTML = audioEnabled ? ICON_AUDIO_ON : ICON_AUDIO_OFF;
         btn.setAttribute('aria-pressed', audioEnabled ? 'true' : 'false');
         const label = t(audioEnabled ? 'nav.audioOn' : 'nav.audioOff');
         btn.setAttribute('aria-label', label);
@@ -2556,11 +2575,16 @@ try {
        is a brighter, higher-pitched take on the same mood sounds, so flipping the toggle
        while audio is on crossfades to a sound that actually fits daylight vs. night.
     ========================================================= */
+    // Same stroke-icon language as the audio glyphs above — a crescent moon while dark is
+    // active (tapping switches to light), a sun while light is active (taps switch to dark).
+    const ICON_THEME_MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    const ICON_THEME_SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7" stroke-linecap="round"/></svg>';
+
     function setThemeToggleUI() {
         const btn = document.getElementById('themeToggleBtn');
         if (!btn) return;
         const isLight = theme === 'light';
-        btn.textContent = isLight ? '☀️' : '🌙';
+        btn.innerHTML = isLight ? ICON_THEME_SUN : ICON_THEME_MOON;
         btn.setAttribute('aria-pressed', isLight ? 'true' : 'false');
         const label = t(isLight ? 'nav.themeToDark' : 'nav.themeToLight');
         btn.setAttribute('aria-label', label);
