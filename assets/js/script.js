@@ -32,12 +32,12 @@ import {
 // (step 5 above). Leaving the placeholders in place just means sign-in will
 // show a clear "Firebase isn't set up yet" error instead of working.
 const FIREBASE_CONFIG = {
-    apiKey: "YOUR_FIREBASE_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_FIREBASE_APP_ID"
+    apiKey: "AIzaSyAxYRU6hXqABxSVansgQGV7sQnI4VYoiPw",
+    authDomain: "continue-with-8e0cc.firebaseapp.com",
+    projectId: "continue-with-8e0cc",
+    storageBucket: "continue-with-8e0cc.firebasestorage.app",
+    messagingSenderId: "263171245328",
+    appId: "1:263171245328:web:86f54266b57be3b95cd195"
 };
 
 // Deliberately defensive: if the config above is still a placeholder, or
@@ -277,8 +277,10 @@ try {
             'tier.explorer': 'Explorer', 'tier.builder': 'Builder', 'tier.creator': 'Creator', 'tier.master': 'Master',
             'profile.welcomeHeading': 'Welcome to Lumen', 'profile.welcomeSub': 'One short, real path a day.',
             'profile.eyebrow': 'your account', 'profile.signInHeading': 'Sign in', 'profile.signInSub': "Create a free profile so today's path and progress get saved.",
+            'profile.signUpHeading': 'Create your account', 'profile.createAccountBtn': 'Create account',
             'profile.namePlaceholder': 'Your name', 'profile.emailPlaceholder': 'you@example.com', 'profile.passwordPlaceholder': 'Password',
             'profile.forgotPassword': 'Forgot password?', 'profile.signInBtn': 'Sign in', 'profile.or': 'or',
+            'profile.signUpBtn': 'Sign up', 'profile.emailInUse': 'That email already has an account — switch to Sign in instead.',
             'profile.showPassword': 'Show password', 'profile.hidePassword': 'Hide password',
             'profile.changePhotoTitle': 'Change photo', 'profile.changePhotoAria': 'Change profile photo', 'profile.changePhotoLink': 'Change photo',
             'profile.growthPreviewDefault': "Your growth story starts with today's path.",
@@ -299,6 +301,8 @@ try {
             'profile.weakPassword': 'Choose a password with at least 6 characters.',
             'profile.invalidEmailError': "That doesn't look like a valid email address.",
             'profile.tooManyAttempts': 'Too many attempts — please wait a moment and try again.',
+            'profile.popupBlocked': "Your browser blocked the sign-in popup — allow popups for this site and try again.",
+            'profile.unauthorizedDomain': "This site isn't authorized for sign-in yet — add this domain in Firebase Console → Authentication → Settings → Authorized domains.",
             'profile.firebaseNotConfigured': "Sign-in isn't set up yet on this site. Please try again later.",
             'profile.resetEmailSent': 'Check your email for a link to reset your password.',
             'overlay.close': 'Close', 'overlay.markComplete': 'Mark complete', 'overlay.completed': 'Completed ✓', 'overlay.tryDifferent': 'Try a different one',
@@ -435,8 +439,10 @@ try {
             'tier.explorer': 'مستكشف', 'tier.builder': 'باني', 'tier.creator': 'مبدع', 'tier.master': 'خبير',
             'profile.welcomeHeading': 'أهلًا بك في لومن', 'profile.welcomeSub': 'مسار واحد قصير وحقيقي كل يوم.',
             'profile.eyebrow': 'حسابك', 'profile.signInHeading': 'تسجيل الدخول', 'profile.signInSub': 'أنشئ حسابًا مجانيًا ليتم حفظ مسار اليوم وتقدّمك.',
+            'profile.signUpHeading': 'أنشئ حسابك', 'profile.createAccountBtn': 'إنشاء حساب',
             'profile.namePlaceholder': 'اسمك', 'profile.emailPlaceholder': 'you@example.com', 'profile.passwordPlaceholder': 'كلمة المرور',
             'profile.forgotPassword': 'نسيت كلمة المرور؟', 'profile.signInBtn': 'تسجيل الدخول', 'profile.or': 'أو',
+            'profile.signUpBtn': 'إنشاء حساب', 'profile.emailInUse': 'هذا البريد الإلكتروني لديه حساب بالفعل — بدّل إلى تسجيل الدخول.',
             'profile.showPassword': 'إظهار كلمة المرور', 'profile.hidePassword': 'إخفاء كلمة المرور',
             'profile.changePhotoTitle': 'تغيير الصورة', 'profile.changePhotoAria': 'تغيير صورة الملف الشخصي', 'profile.changePhotoLink': 'تغيير الصورة',
             'profile.growthPreviewDefault': 'قصة نموّك تبدأ مع مسار اليوم.',
@@ -457,6 +463,8 @@ try {
             'profile.weakPassword': 'اختر كلمة مرور مكوّنة من 6 أحرف على الأقل.',
             'profile.invalidEmailError': 'هذا لا يبدو بريدًا إلكترونيًا صحيحًا.',
             'profile.tooManyAttempts': 'محاولات كثيرة جدًا — يرجى الانتظار قليلًا والمحاولة مرة أخرى.',
+            'profile.popupBlocked': 'متصفحك منع نافذة تسجيل الدخول — اسمح بالنوافذ المنبثقة لهذا الموقع وحاول مرة أخرى.',
+            'profile.unauthorizedDomain': 'هذا الموقع غير مصرّح له بتسجيل الدخول بعد — أضف هذا النطاق في Firebase Console ← Authentication ← Settings ← Authorized domains.',
             'profile.firebaseNotConfigured': 'تسجيل الدخول غير مُفعّل على هذا الموقع بعد. يرجى المحاولة لاحقًا.',
             'profile.resetEmailSent': 'تحقق من بريدك الإلكتروني للحصول على رابط إعادة تعيين كلمة المرور.',
             'overlay.close': 'إغلاق', 'overlay.markComplete': 'وضع علامة مكتمل', 'overlay.completed': 'مكتمل ✓', 'overlay.tryDifferent': 'جرّب واحدًا آخر',
@@ -593,8 +601,10 @@ try {
             'tier.explorer': 'Explorador', 'tier.builder': 'Creador', 'tier.creator': 'Artífice', 'tier.master': 'Maestro',
             'profile.welcomeHeading': 'Bienvenido a Lumen', 'profile.welcomeSub': 'Un camino corto y real cada día.',
             'profile.eyebrow': 'tu cuenta', 'profile.signInHeading': 'Iniciar sesión', 'profile.signInSub': 'Crea un perfil gratuito para que se guarde el camino de hoy y tu progreso.',
+            'profile.signUpHeading': 'Crea tu cuenta', 'profile.createAccountBtn': 'Crear cuenta',
             'profile.namePlaceholder': 'Tu nombre', 'profile.emailPlaceholder': 'tu@ejemplo.com', 'profile.passwordPlaceholder': 'Contraseña',
             'profile.forgotPassword': '¿Olvidaste tu contraseña?', 'profile.signInBtn': 'Iniciar sesión', 'profile.or': 'o',
+            'profile.signUpBtn': 'Registrarse', 'profile.emailInUse': 'Ese correo ya tiene una cuenta — cambia a Iniciar sesión.',
             'profile.showPassword': 'Mostrar contraseña', 'profile.hidePassword': 'Ocultar contraseña',
             'profile.changePhotoTitle': 'Cambiar foto', 'profile.changePhotoAria': 'Cambiar foto de perfil', 'profile.changePhotoLink': 'Cambiar foto',
             'profile.growthPreviewDefault': 'La historia de tu crecimiento empieza con el camino de hoy.',
@@ -615,6 +625,8 @@ try {
             'profile.weakPassword': 'Elige una contraseña de al menos 6 caracteres.',
             'profile.invalidEmailError': 'Eso no parece una dirección de correo válida.',
             'profile.tooManyAttempts': 'Demasiados intentos — espera un momento y vuelve a intentarlo.',
+            'profile.popupBlocked': 'Tu navegador bloqueó la ventana de inicio de sesión — permite las ventanas emergentes para este sitio e inténtalo de nuevo.',
+            'profile.unauthorizedDomain': 'Este sitio aún no está autorizado para iniciar sesión — agrega este dominio en Firebase Console → Authentication → Settings → Authorized domains.',
             'profile.firebaseNotConfigured': 'El inicio de sesión aún no está disponible en este sitio. Inténtalo más tarde.',
             'profile.resetEmailSent': 'Revisa tu correo para ver el enlace para restablecer tu contraseña.',
             'overlay.close': 'Cerrar', 'overlay.markComplete': 'Marcar como completado', 'overlay.completed': 'Completado ✓', 'overlay.tryDifferent': 'Probar otro',
@@ -751,8 +763,10 @@ try {
             'tier.explorer': 'Explorateur', 'tier.builder': 'Bâtisseur', 'tier.creator': 'Créateur', 'tier.master': 'Maître',
             'profile.welcomeHeading': 'Bienvenue sur Lumen', 'profile.welcomeSub': 'Un parcours court et réel, chaque jour.',
             'profile.eyebrow': 'ton compte', 'profile.signInHeading': 'Se connecter', 'profile.signInSub': "Crée un profil gratuit pour que le parcours du jour et ta progression soient sauvegardés.",
+            'profile.signUpHeading': 'Crée ton compte', 'profile.createAccountBtn': 'Créer un compte',
             'profile.namePlaceholder': 'Ton prénom', 'profile.emailPlaceholder': 'toi@exemple.com', 'profile.passwordPlaceholder': 'Mot de passe',
             'profile.forgotPassword': 'Mot de passe oublié ?', 'profile.signInBtn': 'Se connecter', 'profile.or': 'ou',
+            'profile.signUpBtn': "S'inscrire", 'profile.emailInUse': "Cet e-mail a déjà un compte — passe à Se connecter.",
             'profile.showPassword': 'Afficher le mot de passe', 'profile.hidePassword': 'Masquer le mot de passe',
             'profile.changePhotoTitle': 'Changer la photo', 'profile.changePhotoAria': 'Changer la photo de profil', 'profile.changePhotoLink': 'Changer la photo',
             'profile.growthPreviewDefault': "L'histoire de ta progression commence avec le parcours du jour.",
@@ -773,6 +787,8 @@ try {
             'profile.weakPassword': 'Choisis un mot de passe d\'au moins 6 caractères.',
             'profile.invalidEmailError': "Cela ne ressemble pas à une adresse e-mail valide.",
             'profile.tooManyAttempts': "Trop de tentatives — patiente un instant puis réessaie.",
+            'profile.popupBlocked': "Ton navigateur a bloqué la fenêtre de connexion — autorise les popups pour ce site et réessaie.",
+            'profile.unauthorizedDomain': "Ce site n'est pas encore autorisé pour la connexion — ajoute ce domaine dans Firebase Console → Authentication → Settings → Authorized domains.",
             'profile.firebaseNotConfigured': "La connexion n'est pas encore configurée sur ce site. Réessaie plus tard.",
             'profile.resetEmailSent': 'Vérifie tes e-mails pour le lien de réinitialisation du mot de passe.',
             'overlay.close': 'Fermer', 'overlay.markComplete': 'Marquer comme terminé', 'overlay.completed': 'Terminé ✓', 'overlay.tryDifferent': 'Essayer autre chose',
@@ -3358,7 +3374,14 @@ try {
                 return t('profile.invalidEmailError');
             case 'auth/too-many-requests':
                 return t('profile.tooManyAttempts');
+            case 'auth/popup-blocked':
+                return t('profile.popupBlocked');
+            case 'auth/unauthorized-domain':
+                return t('profile.unauthorizedDomain');
+            case 'auth/operation-not-allowed':
+                return t('profile.firebaseNotConfigured');
             default:
+                console.error('Lumen: unmapped Firebase Auth error —', code, err && err.message);
                 return t('profile.signInError');
         }
     }
@@ -3451,12 +3474,32 @@ try {
 
             document.getElementById('growthPreviewText').textContent = growthPreviewSummary();
         } else {
-            heading.textContent = t('profile.signInHeading');
             sub.textContent = t('profile.signInSub');
             signedOutEl.hidden = false;
             signedInEl.hidden = true;
+            setAuthMode(authMode); // repaints the sign-in/sign-up tab UI (heading, button label, name field) in the current mode/language
         }
     }
+
+    // Sign in / Sign up are one form with two modes, switched by the pair of tab chips above
+    // it — rather than two separate forms — so the email/password fields, the "show password"
+    // toggle, and the Google button all stay shared instead of duplicated.
+    let authMode = 'signin';
+    function setAuthMode(mode) {
+        authMode = mode;
+        document.getElementById('authModeSignIn').classList.toggle('selected', mode === 'signin');
+        document.getElementById('authModeSignUp').classList.toggle('selected', mode === 'signup');
+        document.getElementById('emailSignInNameWrap').hidden = (mode === 'signin');
+        document.getElementById('emailSignInName').required = (mode === 'signup');
+        document.getElementById('forgotPasswordBtn').hidden = (mode === 'signup');
+        document.getElementById('emailSignInSubmit').textContent = t(mode === 'signup' ? 'profile.createAccountBtn' : 'profile.signInBtn');
+        document.getElementById('profileHeading').textContent = t(mode === 'signup' ? 'profile.signUpHeading' : 'profile.signInHeading');
+        const noteEl = document.getElementById('emailSignInNote');
+        noteEl.hidden = true;
+        noteEl.classList.remove('form-error');
+    }
+    document.getElementById('authModeSignIn').addEventListener('click', () => setAuthMode('signin'));
+    document.getElementById('authModeSignUp').addEventListener('click', () => setAuthMode('signup'));
 
     // Runs after ANY successful sign-in (Google or email) — resumes whatever the person was
     // actually trying to do (build a path, view growth) instead of leaving them stranded on
@@ -3482,7 +3525,8 @@ try {
         const submitBtn = document.getElementById('emailSignInSubmit');
         noteEl.hidden = true;
         noteEl.classList.remove('form-error');
-        if (!name || !email || !password) return;
+        if (!email || !password) return;
+        if (authMode === 'signup' && !name) return;
         if (!firebaseAuth) {
             noteEl.textContent = t('profile.firebaseNotConfigured');
             noteEl.classList.add('form-error');
@@ -3492,33 +3536,26 @@ try {
 
         submitBtn.disabled = true;
         try {
-            // One form does both sign-in and sign-up, same as before: try signing in with this
-            // email/password first, and only register a brand-new account if Firebase says that
-            // email doesn't exist yet. A wrong password on a KNOWN email falls through to the
-            // catch below and shows the same "doesn't match" note as it always did.
             let user;
-            try {
+            if (authMode === 'signup') {
+                user = (await createUserWithEmailAndPassword(firebaseAuth, email, password)).user;
+                if (name) { try { await updateProfile(user, { displayName: name }); } catch (e) { /* non-fatal — local name still gets set below */ } }
+                identity.name = name;
+            } else {
                 user = (await signInWithEmailAndPassword(firebaseAuth, email, password)).user;
-            } catch (err) {
-                if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
-                    user = (await createUserWithEmailAndPassword(firebaseAuth, email, password)).user;
-                } else {
-                    throw err;
-                }
-            }
-            if (user.displayName !== name) {
-                try { await updateProfile(user, { displayName: name }); } catch (e) { /* non-fatal — local name still gets set below */ }
+                identity.name = identity.name || user.displayName || '';
             }
 
             identity.signedIn = true;
             identity.method = 'email';
-            identity.name = name;
             identity.email = user.email || email;
             identity.uid = user.uid;
             if (!identity.avatar && !identity.photo) identity.avatar = pick(AVATAR_CHOICES);
             completeSignIn();
         } catch (err) {
-            noteEl.textContent = firebaseAuthErrorMessage(err);
+            noteEl.textContent = (authMode === 'signup' && err.code === 'auth/email-already-in-use')
+                ? t('profile.emailInUse')
+                : firebaseAuthErrorMessage(err);
             noteEl.classList.add('form-error');
             noteEl.hidden = false;
         } finally {
@@ -3579,6 +3616,7 @@ try {
             try { await signOut(firebaseAuth); } catch (e) { console.warn('Lumen: Firebase sign-out failed', e); }
         }
         identity = defaultIdentity();
+        authMode = 'signin';
         await saveState();
         updateProfileBtnDisplay();
         profileReturnTo = 'welcome';

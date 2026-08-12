@@ -356,10 +356,17 @@
                     saved.</p>
 
                 <div class="account-card" id="accountSignedOut">
+                    <div class="chip-row auth-mode-row" id="authModeRow">
+                        <button type="button" class="chip selected" id="authModeSignIn"
+                            data-i18n="profile.signInBtn">Sign in</button>
+                        <button type="button" class="chip" id="authModeSignUp"
+                            data-i18n="profile.signUpBtn">Sign up</button>
+                    </div>
                     <form id="emailSignInForm" class="email-signin-form">
-                        <input type="text" id="emailSignInName" class="profile-input"
-                            data-i18n-placeholder="profile.namePlaceholder" placeholder="Your name" maxlength="24"
-                            required>
+                        <div id="emailSignInNameWrap" hidden>
+                            <input type="text" id="emailSignInName" class="profile-input"
+                                data-i18n-placeholder="profile.namePlaceholder" placeholder="Your name" maxlength="24">
+                        </div>
                         <input type="email" id="emailSignInEmail" class="profile-input"
                             data-i18n-placeholder="profile.emailPlaceholder" placeholder="you@example.com" required>
                         <div class="password-field">
