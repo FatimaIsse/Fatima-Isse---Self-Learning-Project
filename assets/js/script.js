@@ -293,6 +293,7 @@ try {
             'profile.namePlaceholder': 'Your name', 'profile.emailPlaceholder': 'you@example.com', 'profile.passwordPlaceholder': 'Password',
             'profile.forgotPassword': 'Forgot password?', 'profile.signInBtn': 'Sign in', 'profile.or': 'or',
             'profile.signUpBtn': 'Sign up', 'profile.emailInUse': 'That email already has an account — switch to Sign in instead.',
+            'profile.continueAsGuest': 'Continue as guest',
             'profile.showPassword': 'Show password', 'profile.hidePassword': 'Hide password',
             'profile.changePhotoTitle': 'Change photo', 'profile.changePhotoAria': 'Change profile photo', 'profile.changePhotoLink': 'Change photo',
             'profile.growthPreviewDefault': "Your growth story starts with today's path.",
@@ -455,6 +456,7 @@ try {
             'profile.namePlaceholder': 'اسمك', 'profile.emailPlaceholder': 'you@example.com', 'profile.passwordPlaceholder': 'كلمة المرور',
             'profile.forgotPassword': 'نسيت كلمة المرور؟', 'profile.signInBtn': 'تسجيل الدخول', 'profile.or': 'أو',
             'profile.signUpBtn': 'إنشاء حساب', 'profile.emailInUse': 'هذا البريد الإلكتروني لديه حساب بالفعل — بدّل إلى تسجيل الدخول.',
+            'profile.continueAsGuest': 'المتابعة كضيف',
             'profile.showPassword': 'إظهار كلمة المرور', 'profile.hidePassword': 'إخفاء كلمة المرور',
             'profile.changePhotoTitle': 'تغيير الصورة', 'profile.changePhotoAria': 'تغيير صورة الملف الشخصي', 'profile.changePhotoLink': 'تغيير الصورة',
             'profile.growthPreviewDefault': 'قصة نموّك تبدأ مع مسار اليوم.',
@@ -617,6 +619,7 @@ try {
             'profile.namePlaceholder': 'Tu nombre', 'profile.emailPlaceholder': 'tu@ejemplo.com', 'profile.passwordPlaceholder': 'Contraseña',
             'profile.forgotPassword': '¿Olvidaste tu contraseña?', 'profile.signInBtn': 'Iniciar sesión', 'profile.or': 'o',
             'profile.signUpBtn': 'Registrarse', 'profile.emailInUse': 'Ese correo ya tiene una cuenta — cambia a Iniciar sesión.',
+            'profile.continueAsGuest': 'Continuar como invitado',
             'profile.showPassword': 'Mostrar contraseña', 'profile.hidePassword': 'Ocultar contraseña',
             'profile.changePhotoTitle': 'Cambiar foto', 'profile.changePhotoAria': 'Cambiar foto de perfil', 'profile.changePhotoLink': 'Cambiar foto',
             'profile.growthPreviewDefault': 'La historia de tu crecimiento empieza con el camino de hoy.',
@@ -779,6 +782,7 @@ try {
             'profile.namePlaceholder': 'Ton prénom', 'profile.emailPlaceholder': 'toi@exemple.com', 'profile.passwordPlaceholder': 'Mot de passe',
             'profile.forgotPassword': 'Mot de passe oublié ?', 'profile.signInBtn': 'Se connecter', 'profile.or': 'ou',
             'profile.signUpBtn': "S'inscrire", 'profile.emailInUse': "Cet e-mail a déjà un compte — passe à Se connecter.",
+            'profile.continueAsGuest': 'Continuer en tant qu\'invité',
             'profile.showPassword': 'Afficher le mot de passe', 'profile.hidePassword': 'Masquer le mot de passe',
             'profile.changePhotoTitle': 'Changer la photo', 'profile.changePhotoAria': 'Changer la photo de profil', 'profile.changePhotoLink': 'Changer la photo',
             'profile.growthPreviewDefault': "L'histoire de ta progression commence avec le parcours du jour.",
@@ -3723,6 +3727,18 @@ try {
         }
     });
 
+    // No account at all — just a local, device-only identity so the rest of the app (which
+    // already gates on identity.signedIn) works exactly as it does for a real sign-in, minus
+    // any Firebase account behind it. Honors whatever action was gated (requireSignIn) if
+    // there was one; otherwise drops them straight onto the home screen, not the profile page.
+    document.getElementById('continueAsGuestBtn').addEventListener('click', () => {
+        identity.signedIn = true;
+        identity.method = 'guest';
+        if (!identity.avatar && !identity.photo) identity.avatar = pick(AVATAR_CHOICES);
+        if (!pendingAfterSignIn) pendingAfterSignIn = () => showScreen('welcome');
+        completeSignIn();
+    });
+
     /* =========================================================
        16b. LANGUAGE SWITCHING
        Swaps every static [data-i18n]-marked string in the DOM, plus
@@ -3816,12 +3832,15 @@ try {
                     if (user.photoURL) identity.photo = user.photoURL;
                     else identity.avatar = pick(AVATAR_CHOICES);
                 }
-            } else if (identity.signedIn) {
+            } else if (identity.signedIn && identity.method !== 'guest') {
                 // The locally cached profile (from a previous visit) says signed-in, but Firebase
-                // — the actual source of truth — has no session. Trust Firebase: a locally stale
-                // "signed in" flag shouldn't grant access to signed-in-only features.
+                // — the actual source of truth for email/google accounts — has no session. Trust
+                // Firebase: a locally stale "signed in" flag shouldn't grant access on its own.
+                // Guests are excluded here — they were never backed by a Firebase session to begin
+                // with, so Firebase reporting "no user" is expected and not a reason to sign them out.
                 identity = defaultIdentity();
                 saveState();
+                updateProfileBtnDisplay(); // the button was already painted once from the stale cached identity — repaint it now that identity's been reset
             }
             resolveInitialAuthCheck();
         });

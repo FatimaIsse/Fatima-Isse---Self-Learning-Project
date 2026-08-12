@@ -107,7 +107,7 @@ body[data-mood="energized"] {
 
 body[data-mood="calm"] {
     --accent: #5fa975;
-    --accent-glow: #9fd6a5;
+    --accent-glow: #7aa57f;
     --accent-soft: rgba(95, 169, 160, 0.20);
     --mood-ink-1: #0B1413;
     --mood-ink-2: #13201E;
@@ -116,8 +116,8 @@ body[data-mood="calm"] {
 }
 
 body[data-mood="tired"] {
-    --accent: #8892A6;
-    --accent-glow: #B7BFD1;
+    --accent: #717a8b;
+    --accent-glow: #a1a8b9;
     --accent-soft: rgba(136, 146, 166, 0.14);
     --mood-ink-1: #0B0E14;
     --mood-ink-2: #131720;
@@ -126,8 +126,8 @@ body[data-mood="tired"] {
 }
 
 body[data-mood="stressed"] {
-    --accent: #8B7CC7;
-    --accent-glow: #C4B8ED;
+    --accent: #786bad;
+    --accent-glow: #b1a6d5;
     --accent-soft: rgba(139, 124, 199, 0.16);
     --mood-ink-1: #0D0B14;
     --mood-ink-2: #161320;
@@ -136,8 +136,8 @@ body[data-mood="stressed"] {
 }
 
 body[data-mood="creative"] {
-    --accent: #D97A5C;
-    --accent-glow: #F2AD8F;
+    --accent: #c16b51;
+    --accent-glow: #db9b80;
     --accent-soft: rgba(217, 122, 92, 0.22);
     --mood-ink-1: #140D0B;
     --mood-ink-2: #201613;
@@ -1089,6 +1089,13 @@ h2 {
 
 .btn-text:hover {
     color: var(--paper);
+}
+
+.guest-continue-link {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin: 0.3rem 0 0;
 }
 
 .btn-danger {
