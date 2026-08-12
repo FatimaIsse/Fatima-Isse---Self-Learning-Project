@@ -2005,7 +2005,7 @@ try {
             const slot = document.getElementById(id);
             if (!slot) return;
             const img = document.createElement('img');
-            img.src = '/assets/images/logo.png';
+            img.src = 'assets/images/logo.png';
             img.alt = 'Lumen';
             slot.appendChild(img);
         });
